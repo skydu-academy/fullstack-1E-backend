@@ -19,6 +19,7 @@ class UserTableSeeder extends Seeder
         $user->name = "user";
         $user->email = "user@gmail.com";
         $user->password = Hash::make('user123456');
+        $user->regis_with = "email";
         $user->save();
     }
 }
