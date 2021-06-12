@@ -19,4 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('login', [UserController::class, 'loginEmail']);
-Route::post('login/google', [UserController::class, 'loginGoogle']);
+Route::post('login/{providers}', [UserController::class, 'loginGoogleOrFb']);

@@ -14,48 +14,56 @@ use Laravel\Socialite\Facades\Socialite;
 class UserController extends Controller
 {
     //
-    public $successStatus = 200;
+    private $successStatus = 200;
 
-    public function login(LoginPostRequest $request)
+    public function loginEmail(LoginPostRequest $request)
     {
         // validasi
         $data_user = $request->validated();
         return $this->loginWithEmail($data_user);
-
     }
 
     public function loginWithEmail($data_user){
         if (Auth::attempt($data_user)) {
             $user = Auth::user();
-            $success['token'] =  $user->createToken('My Token')->accessToken;
-            return response()->json(['success' => $success], $this->successStatus);
+            $data = [
+                "name"      => $user->name,
+                "email"     => $user->email,
+                "token"     => $user->createToken('My Token')->accessToken
+            ];
+            return response()->json(['success' => $data], $this->successStatus);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+           return $this->errorMessage();
         }
     }
 
-    public function loginGoogle(Request $request){
+    public function loginGoogleOrFb($providers, Request $request){
     try {
-        // cek token in google valid or not
-        $googleRequest= Socialite::driver('google')->userFromToken($request->googleToken);
-        return $this->loginWithGoogle($request, $googleRequest);
+        $requestProvider = Socialite::driver($providers)->userFromToken($request->token);
+        return $this->loginWithGoogleOrFb($providers, $requestProvider, $request);
+
     } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
         }
     }
 
-    public function loginWithGoogle($request, $googleRequest){
-        $emailGoogle  = $googleRequest->email;
+    public function loginWithGoogleOrFb($providers, $requestProvider, $request){
+
+        $emailProvider  = $requestProvider->email;
         $emailRequest = $request->email;
-        if ($emailRequest === $emailGoogle) {
-            $data = [
-                "name"      => $googleRequest->name,
-                "email"     => $emailGoogle,
-                "picture"   => $googleRequest->avatar,
-            ];
-            return response()->json(['success' => $data], $this->successStatus);
+
+        // Compare Email Request with Email Google
+        if ($emailRequest === $emailProvider) {
+            $data_user = User::select('name', 'email')->where(['email' => $emailRequest, 'regis_with' => $providers])->first();
+            $data_user['token'] = $data_user->createToken('My Token')->accessToken;
+            Auth::login($data_user);
+            return response()->json(['success' => Auth::user()  ], $this->successStatus);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+          return $this->errorMessage();
         }
+    }
+
+    public function errorMessage(){
+            return response()->json(['error' => 'Unauthorised'], 401);
     }
 }
