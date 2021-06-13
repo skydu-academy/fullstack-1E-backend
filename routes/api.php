@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\Dashboard\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +22,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::post('login', [UserController::class, 'loginEmail']);
 Route::post('login/{providers}', [UserController::class, 'loginGoogleOrFb']);
+Route::post('register/{providers}', [UserController::class, 'registerGoogleOrFb']);
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('logout', [LogoutController::class, 'logout']);
+    Route::get('home',[HomeController::class, 'home']);
+});
