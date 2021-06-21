@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\Dashboard\HomeController;
+use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\UserController;
+use App\Http\Controllers\Api\Dashboard\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +23,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Authentifikasi
 Route::post('login', [UserController::class, 'loginEmail']);
-Route::post('login/{providers}', [UserController::class, 'loginGoogleOrFb']);
-Route::post('register/{providers}', [UserController::class, 'registerGoogleOrFb']);
+Route::post('login/{provider}', [UserController::class, 'loginGoogleOrFb']);
+Route::post('register/{provider}', [UserController::class, 'registerGoogleOrFb']);
 Route::post('register', [UserController::class, 'registerEmail']);
 
 // Wajib Authentifikasi
