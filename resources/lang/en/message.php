@@ -13,8 +13,9 @@ return [
     |
     */
 
-    'unauthorised' => 'Unauthorised',
-    'user_registered' => 'user registered',
-    'user_register' => 'register user success',
-
+    'unauthorised'      => 'Unauthorised',
+    'user_registered'   => 'user registered',
+    'user_register'     => 'register user success',
+    'verification_link_sent'  => 'Verification link sent!',
+    'email_notice'      => 'please verify email first',
 ];

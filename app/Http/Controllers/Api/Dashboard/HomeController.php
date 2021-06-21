@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use ResponseHelper;
 
 class HomeController extends Controller
 {
     //
     public function home(){
-        return response()->json(['success' => "now in home"], 200);
+        return ResponseHelper::handleRepsonse(Auth::user());
     }
 }
