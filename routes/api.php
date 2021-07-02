@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\UserController;
 use App\Http\Controllers\Api\Dashboard\HomeController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +21,19 @@ use Illuminate\Support\Facades\Route;
 // Authentifikasi
 Route::post('register/{provider}', [UserController::class, 'registerGoogleOrFb']);
 Route::post('register', [UserController::class, 'registerEmail']);
+
+// Route::post('login', function(){
+//     $response = Http::asForm()->post('http://passport-app.com/oauth/token', [
+//         'grant_type' => 'password',
+//         'client_id' => '1',
+//         'client_secret' => 'eahf87pQUpE1PODPXmGpWTEwjLv934RqqMdRhaVR',
+//         'username' => 'user@gmail.com',
+//         'password' => 'user123456',
+//         'scope' => '',
+//     ]);
+
+//     return ResponseHelper::handleRepsonse($response->json());
+// });
 
 // Required Authentifikasi & Verification Email
 Route::middleware(['auth:api', 'verified'])->group(function () {
