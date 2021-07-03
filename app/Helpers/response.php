@@ -2,9 +2,10 @@
    // Response
    class ResponseHelper{
 
-    const SUCCESS  = "success";
-    const ERROR    = "error";
-    const MESSAGE  = "message";
+    const SUCCESS         = "success";
+    const ERROR           = "error";
+    const UNAUTHORIZED    = "unauthorized";
+    const MESSAGE         = "message";
 
     public static function handleRepsonse($data, $response = null)
     {
@@ -14,6 +15,9 @@
                 break;
             case ResponseHelper::MESSAGE:
                 return ResponseHelper::handleMessageResponse($response, $data, 200);
+                break;
+            case ResponseHelper::UNAUTHORIZED:
+                return ResponseHelper::handleMessageResponse($response, $data, 403);
                 break;
             default:
                 return ResponseHelper::handleMessageResponse(ResponseHelper::SUCCESS, $data, 200);

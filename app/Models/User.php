@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Auth\LoginPostRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +15,12 @@ use ResponseHelper;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
+     *
      */
     protected $fillable = [
         'name',
@@ -34,7 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'remember_token', 'email_verified_at', 'created_at', 'updated_at', 'password'
+        'remember_token', 'created_at', 'updated_at', 'email_verified_at',
+        // 'password',
     ];
 
     /**
@@ -46,16 +50,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function login($email, $login_with, $password = null)
+    public function checkUser($email, $login_with)
     {
-        if ($password) {
-            Auth::attempt(['email' => $email, 'password' => $password]);
-            $data_user = Auth::user();
-        } else {
-            $data_user = $this->firstWhere([['email', '=', $email], ['regis_with', '=', $login_with]]);
-            $data_user = $data_user ? Auth::loginUsingId($data_user->id) : false;
-        }
-        return $data_user ? $data_user : false;
+        return $this->firstWhere([['email', '=', $email], ['regis_with', '=', $login_with]]);
     }
 
     public function register($data_user){
