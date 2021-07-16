@@ -14,7 +14,7 @@ use ResponseHelper;
 class RegisterController extends Controller
 {
     private $data_user_from_provider;
-    const EMAIL = 'email';
+    const EMAIL      = 'email';
     const REGIS_WITH = 'regis_with';
 
     public function __construct(User $user)
@@ -27,12 +27,14 @@ class RegisterController extends Controller
     {
         $data_user          = $request->validated();
         $db_check_user      = $this->user->checkUser($request->email, self::EMAIL);
+
+        // return ResponseHelper::handleRepsonse($db_check_user);
         if ($db_check_user) {
             return ResponseHelper::handleRepsonse(__('message.user_registered'), ResponseHelper::ERROR);
         }
-        $data_user[self::REGIS_WITH] = self::REGIS_WITH;
+        $data_user[self::REGIS_WITH] = self::EMAIL;
         event(new Registered($this->user->register($data_user)));
-        return ResponseHelper::handleRepsonse(__('message.user_register'));
+        return ResponseHelper::handleRepsonse(__('message.user_register_success'));
     }
 
     public function registerGoogleOrFb($provider, Request $request)
@@ -43,9 +45,11 @@ class RegisterController extends Controller
            return ResponseHelper::handleRepsonse($checkProvider, ResponseHelper::ERROR);
         }
 
-        $email         = $this->data_user_from_provider[self::EMAIL];
+        $email              = $this->data_user_from_provider[self::EMAIL];
+        $db_check_user      = $this->user->checkUser($email, $provider);
+
         // valid When User Registered
-        if ($this->user->checkUser($email, $provider)) {
+        if (!$db_check_user) {
             return ResponseHelper::handleRepsonse(__('message.user_registered'), ResponseHelper::ERROR);
         }
         $this->user->register($this->data_user_from_provider);

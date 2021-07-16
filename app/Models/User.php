@@ -28,7 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'regis_with',
         'profil_picture',
-        'email_verified_at'
+        'email_verified_at',
+        'deskripsi'
     ];
 
     /**
@@ -38,7 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'remember_token', 'created_at', 'updated_at', 'email_verified_at',
-        // 'password',
+        'password',
     ];
 
     /**
@@ -56,8 +57,24 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function register($data_user){
-        $data_user['password'] = Hash::make($data_user['password']);
+        $data_user['password']          = Hash::make($data_user['password']);
+        $data_user['profil_picture']    = "user-default.png";
         return $this->create($data_user);
+    }
+
+    public function posts(){
+        return $this->hasMany(Post::class);
+    }
+    public function followers(){
+        return $this->hasMany(Follower::class);
+    }
+    public function post_like_users(){
+        return $this->belongsToMany(Post::class, 'like_posts')
+                    ->withTimestamps();
+    }
+    public function post_comment_users(){
+        return $this->belongsToMany(Post::class, 'comment_posts')->withPivot('comment')
+                    ->withTimestamps();
     }
 
 }

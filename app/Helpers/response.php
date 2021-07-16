@@ -4,7 +4,7 @@
 
     const SUCCESS         = "success";
     const ERROR           = "error";
-    const UNAUTHORIZED    = "unauthorized";
+    const UNAUTHENTICATED = "unauthenticated";
     const MESSAGE         = "message";
 
     public static function handleRepsonse($data, $response = null)
@@ -16,8 +16,8 @@
             case ResponseHelper::MESSAGE:
                 return ResponseHelper::handleMessageResponse($response, $data, 200);
                 break;
-            case ResponseHelper::UNAUTHORIZED:
-                return ResponseHelper::handleMessageResponse($response, $data, 403);
+            case ResponseHelper::UNAUTHENTICATED:
+                return ResponseHelper::handleMessageResponse($response, $data, 401);
                 break;
             default:
                 return ResponseHelper::handleMessageResponse(ResponseHelper::SUCCESS, $data, 200);

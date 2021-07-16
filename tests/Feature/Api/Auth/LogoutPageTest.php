@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature\Api\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +14,7 @@ class LogoutPageTest extends TestCase
     /** @test */
     public function logout_with_not_login()
     {
-        $response = $this->postJson('api/logout');
+        $response = $this->postJson('api/dashboard/logout');
         $response->assertUnauthorized();
     }
     /** @test */
@@ -25,7 +25,7 @@ class LogoutPageTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
         dump($user);
-        $response = $this->postJson('api/logout');
+        $response = $this->postJson('api/dashboard/logout');
         $response->assertJson(200);
     }
 }

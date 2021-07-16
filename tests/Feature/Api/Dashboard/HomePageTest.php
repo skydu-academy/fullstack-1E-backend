@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Dashboard;
+namespace Tests\Feature\Api\Dashboard;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,7 +13,7 @@ class HomePageTest extends TestCase
     /** @test */
     public function home_with_not_login()
     {
-        $response = $this->getJson('/api/home');
+        $response = $this->getJson('/api/dashboard/home');
         $response->assertUnauthorized();
     }
     /** @test */
@@ -21,7 +21,7 @@ class HomePageTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
-        $response = $this->getJson('/api/home');
+        $response = $this->getJson('/api/dashboard/home');
         $response->assertStatus(200);
     }
 }

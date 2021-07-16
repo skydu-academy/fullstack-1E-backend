@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature\Api\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -45,7 +45,7 @@ class EmailPageTest extends TestCase
     public function email_notice_failde_with_not_login()
     {
         $response = $this->getJson(route('verification.notice'));
-        $response->assertStatus(401)->assertJson(['message' => "Unauthenticated."]);
+        $response->assertUnauthorized();
     }
 
     // Send Verify
@@ -73,7 +73,7 @@ class EmailPageTest extends TestCase
     public function resend_email_with_not_login()
     {
         $response = $this->getJson(route('verification.send'));
-        $response->assertStatus(401)->assertJson(['message' => "Unauthenticated."]);
+        $response->assertUnauthorized();
     }
 
 }

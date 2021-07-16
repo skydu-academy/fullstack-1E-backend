@@ -15,7 +15,7 @@ return [
 
     'unauthorised'            => 'Unauthorised',
     'user_registered'         => 'user registered',
-    'user_register'           => 'register user success',
+    'user_register_success'   => 'register user success',
     'verification_link_sent'  => 'Verification link sent!',
     'email_notice'            => 'please verify email first',
     'email_not_same'          => 'e-mail is not the same',
@@ -23,6 +23,9 @@ return [
     'email_verify_success'    => 'Email Verify Success',
     'email_verify_failed'     => 'Email Verify failed',
     'email_has_been_verify'   => 'Email has been Verified',
-    'unauthorized'            => 'unauthorized',
+    'unauthenticated'         => 'Unauthenticated.',
+    'logout_success'          => 'Successfully Logged out',
 
+    'post_success'            => 'Post upload success',
+    'updated_user_success'    => 'Updated user success',
 ];

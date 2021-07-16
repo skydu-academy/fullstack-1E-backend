@@ -45,7 +45,7 @@ class EmailController extends Controller
     private function checkUserLoginWithEmailData($id, $hash){
         $id     = !hash_equals((string) $id, (string) Auth::user()->id);
         $hash   = !hash_equals((string) $hash, sha1(Auth::user()->email));
-        if ($id || $hash) return ResponseHelper::handleRepsonse(__('message.unauthorized'), ResponseHelper::UNAUTHORIZED);
+        if ($id || $hash) return ResponseHelper::handleRepsonse(__('message.unauthorised'), ResponseHelper::UNAUTHENTICATED);
     }
     private function emailVerifySuccess(EmailVerifyRequest $request){
         $request->fulfill();
