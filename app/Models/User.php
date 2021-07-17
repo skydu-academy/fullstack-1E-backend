@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Auth\LoginPostRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,11 +14,12 @@ use ResponseHelper;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
+     *
      */
     protected $fillable = [
         'name',
@@ -25,7 +27,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'regis_with',
         'profil_picture',
-        'email_verified_at'
+        'email_verified_at',
+        'deskripsi'
     ];
 
     /**
@@ -34,7 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'remember_token', 'email_verified_at', 'created_at', 'updated_at', 'password'
+        'remember_token', 'created_at', 'updated_at', 'email_verified_at',
+        'password',
     ];
 
     /**
@@ -46,21 +50,32 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function login($email, $login_with, $password = null)
+    public function checkUser($email, $login_with)
     {
-        if ($password) {
-            Auth::attempt(['email' => $email, 'password' => $password]);
-            $data_user = Auth::user();
-        } else {
-            $data_user = $this->firstWhere([['email', '=', $email], ['regis_with', '=', $login_with]]);
-            $data_user = $data_user ? Auth::loginUsingId($data_user->id) : false;
-        }
-        return $data_user ? $data_user : false;
+        return $this->firstWhere([['email', '=', $email], ['regis_with', '=', $login_with]]);
     }
 
     public function register($data_user){
-        $data_user['password'] = Hash::make($data_user['password']);
+        $data_user['password']          = Hash::make($data_user['password']);
         return $this->create($data_user);
+    }
+
+    public function posts(){
+        return $this->hasMany(Post::class);
+    }
+    public function followers(){
+        return $this->hasMany(Follower::class);
+    }
+    public function notifications(){
+        return $this->hasMany(Notification::class);
+    }
+    public function post_like_users(){
+        return $this->belongsToMany(Post::class, 'like_posts')
+                    ->withTimestamps();
+    }
+    public function post_comment_users(){
+        return $this->belongsToMany(Post::class, 'comment_posts')->withPivot('comment')
+                    ->withTimestamps();
     }
 
 }

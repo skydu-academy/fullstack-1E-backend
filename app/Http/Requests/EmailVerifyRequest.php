@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
-class RegisterPostRequest extends FormRequest
+class EmailVerifyRequest extends EmailVerificationRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,7 @@ class RegisterPostRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:6',
-            'email' => 'required|email',
-            'password' => 'required|min:6|alpha_num|confirmed',
-            'password_confirmation' => 'required|min:6|alpha_num',
+            //
         ];
     }
 }

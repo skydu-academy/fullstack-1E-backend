@@ -18,3 +18,5 @@ Route::get('/', function () {
     return view('welcome',['data'=>'<h1>231</h1>']);
 });
 
+
+
