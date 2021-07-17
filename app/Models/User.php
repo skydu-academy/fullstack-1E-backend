@@ -58,7 +58,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function register($data_user){
         $data_user['password']          = Hash::make($data_user['password']);
-        $data_user['profil_picture']    = "user-default.png";
         return $this->create($data_user);
     }
 
@@ -67,6 +66,9 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     public function followers(){
         return $this->hasMany(Follower::class);
+    }
+    public function notifications(){
+        return $this->hasMany(Notification::class);
     }
     public function post_like_users(){
         return $this->belongsToMany(Post::class, 'like_posts')

@@ -49,11 +49,11 @@ class RegisterController extends Controller
         $db_check_user      = $this->user->checkUser($email, $provider);
 
         // valid When User Registered
-        if (!$db_check_user) {
+        if ($db_check_user) {
             return ResponseHelper::handleRepsonse(__('message.user_registered'), ResponseHelper::ERROR);
         }
         $this->user->register($this->data_user_from_provider);
-        return ResponseHelper::handleRepsonse(__('message.user_register'));
+        return ResponseHelper::handleRepsonse(__('message.user_register_success'));
     }
 
     // Check Authentifikasi Token Google And Facebook

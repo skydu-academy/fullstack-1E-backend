@@ -13,12 +13,12 @@ class NotificationController extends Controller
     //
     public function getNotification()
     {
-        $notification = Notification::where([['user_id', '=', Auth::user()->id]])->orderBy('created_at', 'desc')->get();
+        $notification = Notification::where([['action_user_id', '=', Auth::user()->id]])->with('user')->orderBy('created_at', 'desc')->get();
         return ResponseHelper::handleRepsonse($notification);
     }
     public function getTotalNotification()
     {
-        $notification = Notification::where([['user_id', '=', Auth::user()->id]])->count();
+        $notification = Notification::where([['action_user_id', '=', Auth::user()->id]])->count();
         return ResponseHelper::handleRepsonse(['total_notification'=>$notification]);
     }
 }

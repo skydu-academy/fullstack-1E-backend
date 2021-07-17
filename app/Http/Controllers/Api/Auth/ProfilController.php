@@ -7,6 +7,7 @@ use App\Http\Requests\ProfilRequest;
 use App\Models\CommentPost;
 use App\Models\Follower;
 use App\Models\LikePost;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -22,13 +23,15 @@ class ProfilController extends Controller
     public function profil($id)
     {
         $user                           = User::find($id);
-        $data['id']                     = Auth::user()->id;
+        $data['id']                     = $user->id;
         $data['name']                   = $user->name;
         $data['profil_picture']         = $user->profil_picture;
         $data['deskripsi']              = $user->deskripsi;
+        $data['regis_with']             = $user->regis_with;
         $data['total_posts']            = Post::where('user_id', $id)->count();
         $data['total_followers']        = Follower::where('user_follower_id', $id)->count();
         $data['total_following']        = Follower::where('user_id', $id)->count();
+        $data['total_notification']     = Notification::where([['action_user_id', '=', Auth::user()->id]])->count();
         $post                           = Post::where('user_id',$id)->with('user')->orderBy('created_at', 'desc')->get();
         $data['posts']                  = $post->map(function($post){
             $data['id']             = $post->id;
@@ -36,6 +39,8 @@ class ProfilController extends Controller
             $data['image']          = $post->image;
             $data['user']           = $post->user;
             $data['user']           = $post->user;
+            $data['total_like']     = LikePost::where('post_id', $post->id)->count();
+            $data['total_comment']  = CommentPost::where('post_id', $post->id)->count();
             $data['total_comment']  = CommentPost::where('post_id', $post->id)->count();
             return $data;
         });

@@ -39,15 +39,23 @@ class CommentController extends Controller
     public function store(CommentRequest $request)
     {
         $request->validated();
-        $user_id = Auth::user()->id;
+        $user_id      = Auth::user()->id;
+        $post_id      = $request->post_id;
         // $check_comment_post = CommentPost::where([['user_id', '=', $user_id], ['post_id', '=', $request->post_id]])->first();
 
         // if ($check_comment_post) {
         //     return ResponseHelper::handleRepsonse('post comment already');
         // }
         $user = User::find($user_id);
-        $user->post_comment_users()->attach($request->post_id, ['comment' => $request->comment]);
-        
+        $user->post_comment_users()->attach($post_id, ['comment' => $request->comment]);
+        $post = Post::find($post_id);
+        $user = User::find($user_id);
+        $user->notifications()->create([
+            'action_user_id'       => $post->user_id,
+            'action_id'            => $post_id,
+            'action'               => 'comment',
+            'status'               => 'waiting to be seen',
+        ]);
         return ResponseHelper::handleRepsonse('Comment Post success insert in db');
     }
 
@@ -101,7 +109,7 @@ class CommentController extends Controller
     public function commentByPostId($post_id)
     {
         $post = Post::find($post_id);
-        $data = $post->user_comment_posts;
+        $data = $post->user_comment_posts()->orderBy('created_at', 'DESC')->get()->toArray();;
         return ResponseHelper::handleRepsonse($data);
     }
 }

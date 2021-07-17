@@ -4,6 +4,8 @@ namespace App\Observers\Api\Dashboard;
 
 use App\Models\Follower;
 use App\Models\Notification;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class FollowerObserver
 {
@@ -17,10 +19,10 @@ class FollowerObserver
     public function created(Follower $follower)
     {
         //
-        Notification::create([
-            'user_notification_id' => $follower['user_follower_id'],
-            'user_id'              => $follower['user_id'],
-            'action'               => 'Follow',
+        $user = User::find($follower['user_id']);
+        $user->notifications()->create([
+            'action_user_id'       => $follower['user_follower_id'],
+            'action'               => 'follow',
             'status'               => 'waiting to be seen',
         ]);
     }

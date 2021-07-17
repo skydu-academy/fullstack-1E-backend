@@ -17,8 +17,10 @@ class LikePostController extends Controller
     //
     public function like(Request $request)
     {
-        $user_id    = Auth::user()->id;
-        $post_id    = $request->post_id;
+        $user_id        = Auth::user()->id;
+        $post_id        = $request->post_id;
+
+
         $follower_check = LikePost::where([
             ['user_id', '=', $user_id],
             ['post_id', '=', $post_id],
@@ -31,11 +33,12 @@ class LikePostController extends Controller
         $user = User::find($user_id);
         $user->post_like_users()->attach($post_id);
 
-        Notification::create([
-            'user_notification_id' => $user_id,
-            'user_id'              => Auth::user(),
-            'action_user_id'              => Auth::user(),
-            'action_id'              => Auth::user(),
+
+        $post = Post::find($post_id);
+        $user = User::find($user_id);
+        $user->notifications()->create([
+            'action_user_id'       => $post->user_id,
+            'action_id'            => $post_id,
             'action'               => 'like',
             'status'               => 'waiting to be seen',
         ]);
@@ -59,5 +62,10 @@ class LikePostController extends Controller
             ['post_id', '=', $post_id],
         ])->first();
         return ResponseHelper::handleRepsonse($follower_check ? true : false);
+    }
+    public function totalLike($post_id)
+    {
+        $total_like =  LikePost::where('post_id', $post_id)->count();
+        return ResponseHelper::handleRepsonse($total_like);
     }
 }

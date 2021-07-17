@@ -54,7 +54,8 @@ Route::prefix('dashboard')->middleware(['auth:api', 'verified'])->group(function
     Route::delete('unfollow/{user_follower_id}', [FollowerController::class, 'unFollow']);
 
     //Like
-    Route::get('like/{user_follower_id}', [LikePostController::class, 'checkLikePostById']);
+    Route::get('like/{post_id}', [LikePostController::class, 'checkLikePostById']);
+    Route::get('total-like/{post_id}', [LikePostController::class, 'totalLike']);
     Route::post('like', [LikePostController::class, 'like']);
     Route::delete('unlike/{post_id}', [LikePostController::class, 'unLike']);
 
