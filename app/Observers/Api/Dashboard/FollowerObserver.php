@@ -46,6 +46,8 @@ class FollowerObserver
      */
     public function deleted(Follower $follower)
     {
+        $notif = Notification::where([['user_id', "=", $follower['user_id']], ['action_user_id', "=", $follower['user_follower_id']], ['action', "=", "follow"]])->first();
+        Notification::destroy($notif->id);
         //
     }
 

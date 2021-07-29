@@ -20,7 +20,6 @@ class LikePostController extends Controller
         $user_id        = Auth::user()->id;
         $post_id        = $request->post_id;
 
-
         $follower_check = LikePost::where([
             ['user_id', '=', $user_id],
             ['post_id', '=', $post_id],
@@ -32,7 +31,6 @@ class LikePostController extends Controller
 
         $user = User::find($user_id);
         $user->post_like_users()->attach($post_id);
-
 
         $post = Post::find($post_id);
         $user = User::find($user_id);
@@ -53,19 +51,22 @@ class LikePostController extends Controller
         }
         $user = User::find($user_id);
         $user->post_like_users()->detach($post_id);
+        $notif = Notification::where([['user_id',"=",$user_id],['action_id', "=", $post_id], ['action', "=", "like"] ])->first();
+        Notification::destroy($notif->id);
         return ResponseHelper::handleRepsonse('unliked post success');
     }
-    public function checkLikePostById($post_id)
+    public function checkLikePostById(Request $request)
     {
-        $follower_check = LikePost::where([
-            ['user_id', '=', Auth::user()->id],
-            ['post_id', '=', $post_id],
-        ])->first();
-        return ResponseHelper::handleRepsonse($follower_check ? true : false);
+
+        $data  = LikePost::whereIn('user_id', [1])->get(['post_id']);
+        $data = $data->map(function($data){
+         return $data = $data->post_id;
+        });
+        return ResponseHelper::handleRepsonse($data);
     }
     public function totalLike($post_id)
     {
-        $total_like =  LikePost::where('post_id', $post_id)->count();
+        $total_like =  LikePost::where('post_id', [$post_id])->count();
         return ResponseHelper::handleRepsonse($total_like);
     }
 }

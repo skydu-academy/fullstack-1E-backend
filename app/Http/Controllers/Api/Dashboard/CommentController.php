@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\CommentRequest;
 use App\Models\CommentPost;
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ResponseHelper;
 
 class CommentController extends Controller
@@ -41,18 +43,13 @@ class CommentController extends Controller
         $request->validated();
         $user_id      = Auth::user()->id;
         $post_id      = $request->post_id;
-        // $check_comment_post = CommentPost::where([['user_id', '=', $user_id], ['post_id', '=', $request->post_id]])->first();
-
-        // if ($check_comment_post) {
-        //     return ResponseHelper::handleRepsonse('post comment already');
-        // }
         $user = User::find($user_id);
         $user->post_comment_users()->attach($post_id, ['comment' => $request->comment]);
         $post = Post::find($post_id);
-        $user = User::find($user_id);
+        $lastId = CommentPost::where([['user_id',"=",$user_id], ["comment", "=", $request->comment], ["post_id", "=", $post_id]])->first();
         $user->notifications()->create([
             'action_user_id'       => $post->user_id,
-            'action_id'            => $post_id,
+            'action_id'            => $lastId->id,
             'action'               => 'comment',
             'status'               => 'waiting to be seen',
         ]);
@@ -103,13 +100,25 @@ class CommentController extends Controller
             return ResponseHelper::handleRepsonse('delete comment post failed because data not found', ResponseHelper::ERROR);
         }
         CommentPost::destroy($id);
+        $notif = Notification::where([["user_id","=",Auth::user()->id], ["action_id","=", $id]])->first();
+        Notification::destroy($notif->id);
         return ResponseHelper::handleRepsonse('delete post comment success');
     }
 
     public function commentByPostId($post_id)
     {
         $post = Post::find($post_id);
-        $data = $post->user_comment_posts()->orderBy('created_at', 'DESC')->get()->toArray();;
+        $data = $post->user_comment_posts()->orderBy('comment_posts.created_at', 'ASC')->get()->toArray();
+        $dataA = CommentPost::whereIn('post_id',[$post_id])->orderBy('comment_posts.created_at', 'ASC')->get(['id']);
+        for ($i=0; $i < count($data); $i++) {
+            $data[$i]['pivot']['comment_id'] = $dataA[$i]->id;
+        }
         return ResponseHelper::handleRepsonse($data);
+    }
+
+    public function totalComment($post_id)
+    {
+        $total_like =  CommentPost::where('post_id', [$post_id])->count();
+        return ResponseHelper::handleRepsonse($total_like);
     }
 }

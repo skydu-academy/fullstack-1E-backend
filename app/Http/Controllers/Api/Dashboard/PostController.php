@@ -7,6 +7,7 @@ use App\Http\Requests\PostRequest;
 use App\Models\LikedPost;
 use App\Models\Post;
 use App\Models\User;
+use App\Rules\MaxWordsRule;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        return ResponseHelper::handleRepsonse(Post::select('caption', 'image')->find($id));
     }
 
     /**
@@ -63,9 +64,27 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updatePost(Request $request, $id)
     {
         //
+        $request->validate(['caption' => new MaxWordsRule]);
+
+        $image          = $request->image;
+        $caption        = empty($request->caption)  ?  NULL : $request->caption;
+
+        if(!isset($image)){
+            Post::where('id', $id)
+            ->update(['caption' => $caption]);
+        }else{
+            $file_name      =  md5('skybook' . time()) . "." . $image->getClientOriginalExtension();
+            $image->storeAs('public/posts', $file_name);
+            Post::where('id', $id)
+            ->update(['caption' => $caption, 'image' => $file_name]);
+        }
+        return ResponseHelper::handleRepsonse('update post success');
+
+        // save in Database
+        // Done
     }
 
     /**
@@ -84,6 +103,6 @@ class PostController extends Controller
         return ResponseHelper::handleRepsonse('delete post success');
     }
 
- 
+
 
 }

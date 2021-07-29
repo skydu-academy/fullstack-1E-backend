@@ -24,8 +24,8 @@ class ProfilRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:6',
-            'email' => 'required|email',
-        ];
+            'name'  => 'min:6',
+            'email' => 'email',
+               ];
     }
 }

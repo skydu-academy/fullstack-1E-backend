@@ -31,18 +31,17 @@ Route::post('register/{provider}', [RegisterController::class, 'registerGoogleOr
 Route::post('register', [RegisterController::class, 'registerEmail']);
 
 // Required Authentifikasi & Verification Email
+Route::get('dashboard/user',[UserController::class, 'getUserLogin'])->middleware('auth:api');
 Route::prefix('dashboard')->middleware(['auth:api', 'verified'])->group(function () {
-
-    Route::get('user',[UserController::class, 'getUserLogin']);
     // Dashboard
     Route::post('logout', [LogoutController::class, 'logout']);
     Route::get('home',[HomeController::class, 'home']);
     Route::apiResource('post', PostController::class);
+    Route::post('post-update/{id}', [PostController::class,'updatePost']);
 
     Route::apiResource('comment-post', CommentController::class);
-
     Route::get('comment-post-id/{post_id}', [CommentController::class, 'commentByPostId']);
-
+    Route::get('total-comment/{post_id}', [CommentController::class, 'totalComment']);
     //Profil
     Route::get('profil/{id}', [ProfilController::class, 'profil']);
     Route::get('profil-update/{id}', [ProfilController::class, 'show']);
@@ -54,7 +53,7 @@ Route::prefix('dashboard')->middleware(['auth:api', 'verified'])->group(function
     Route::delete('unfollow/{user_follower_id}', [FollowerController::class, 'unFollow']);
 
     //Like
-    Route::get('like/{post_id}', [LikePostController::class, 'checkLikePostById']);
+    Route::get('check-like', [LikePostController::class, 'checkLikePostById']);
     Route::get('total-like/{post_id}', [LikePostController::class, 'totalLike']);
     Route::post('like', [LikePostController::class, 'like']);
     Route::delete('unlike/{post_id}', [LikePostController::class, 'unLike']);
@@ -67,8 +66,7 @@ Route::prefix('dashboard')->middleware(['auth:api', 'verified'])->group(function
 // Verification Email
 Route::prefix('email')->middleware('auth:api')->group(function () {
     Route::get('/notice', [EmailController::class, 'emailNotice'])->name('verification.notice');
-    Route::get('/resend-verify', [EmailController::class, 'reSendEmailVerification'])->name('verification.send');;
-    Route::get('/handle-verify/{id}/{hash}', [EmailController::class, 'handleVerify']);
+    Route::get('/verify/{id}/{hash}', [EmailController::class, 'handleVerify']);
 });
 Route::get('/email/send-verify/{id}/{hash}', [EmailController::class, 'sendVerify'])->name('verification.verify');
 
