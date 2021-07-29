@@ -16,7 +16,7 @@ class PostTableSeeder extends Seeder
      */
 
     public function randomeDate(){
-        return  Carbon::now()->subDays(rand(0, 30))->format('Y-m-d h:i:s');
+        return  Carbon::now()->subDays(rand(0, 120))->format('Y-m-d h:i:s');
     }
 
     public function run()
